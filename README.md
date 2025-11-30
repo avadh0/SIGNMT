@@ -1,112 +1,72 @@
-📘 SIGN.MT – Team Collaboration Documentation (Updated)
+# SIGN.MT
 
-A clean, technical, collaboration-friendly document
+> **Multilingual, rule-based sign-language rendering system (no ML trained yet)**
 
-1. Project Summary
+---
 
-sign.mt is a multilingual sign-language translation system that converts:
+## 1. Project summary
 
-Text → Sign Video
+**sign.mt** converts:
 
-Speech → Text → Sign Video
+* Text → Sign Video
+* Speech → Text → Sign Video
+* YouTube Audio → Text → Sign Video
 
-YouTube Audio → Text → Sign Video
+**This version does NOT use any trained ML models.**
+All processing is rule-based: dummy glossing, dictionary-based gloss→pose mapping, and OpenCV rendering.
 
-This version of the project does NOT use any trained machine-learning model.
-We have NOT trained on any dataset yet.
+---
 
-Instead, the system uses:
+## 2. Current achievements (what works now)
 
-Dummy gloss generation
+* ✅ Multilingual text translation (any language → English using `deep-translator`)
+* ✅ Speech recognition: microphone input and YouTube audio extraction
+* ✅ Dummy gloss generation (simple uppercase token glossing)
+* ✅ Gloss → pose mapping (dictionary-based synthetic pose generation)
+* ✅ Video rendering (lightweight OpenCV-based rendering → `output.mp4`)
+* ✅ Runs on basic laptops (Python 3.10, low RAM, no GPU required)
 
-Dictionary-based gloss → pose mapping
+> **Important:** No ML models trained. No datasets used. All behavior is pre-coded rules.
 
-Lightweight OpenCV-based video rendering
+---
 
-This makes the project fast, simple, and able to run on low-resource devices.
+## 3. Future goals (phase 2)
 
-2. Current Achievements (What works now)
-✔ Multilingual text translation
+* Train a real Text → Gloss model (datasets: RWTH-PHOENIX-2014T, How2Sign, ASLG-PC12)
+* Train a Gloss → Pose generation model (use Mediapipe pose sequences; LSTM / Transformer)
+* Add 3D pose & avatar animation
+* Implement proper sign grammar rules
+* Collect and preprocess datasets (open tasks for contributors)
 
-Any language → English (deep-translator)
+---
 
-✔ Speech recognition
+## 4. Folder structure
 
-Microphone input
+### 📦 Project Structure Diagram (Visual)
 
-YouTube audio input
+```
+SIGNMT/
+│
+├── demo_run.py
+├── output.mp4
+│
+├── utils/
+│   ├── text_clean.py
+│   ├── segmentation.py
+│   ├── langid.py
+│   ├── gloss_to_pose_dict.py
+│   ├── pose_render.py
+│   ├── stt.py
+│   └── youtube_audio.py
+│
+├── models/
+│   ├── text2gloss/        (placeholder)
+│   ├── gloss2pose/        (placeholder)
+│   └── README.md          (explanation of missing ML models)
+│
+```
 
-✔ Dummy gloss generation
-
-Simple uppercase token glossing.
-(No ML training used.)
-
-✔ Gloss → Pose mapping
-
-Dictionary-based synthetic pose generation.
-(No real dataset used.)
-
-✔ Video rendering
-
-Lightweight
-
-Low-resolution
-
-Optimized performer
-
-Outputs output.mp4
-
-✔ Runs on basic laptops
-
-No GPU required
-
-Python 3.10
-
-Low RAM usage
-
-❗ Important: No ML models are trained in this project yet
-
-No text→gloss ML model
-
-No gloss→pose ML model
-
-No dataset has been trained on
-
-Only pre-coded rule-based methods
-
-This is clearly stated for team transparency.
-
-3. Future Goals (What we want to achieve)
-🟦 1. Train real Text → Gloss model
-
-Using datasets like:
-
-RWTH-PHOENIX-2014T
-
-How2Sign
-
-ASLG-PC12
-
-(Model: Transformer / seq2seq)
-
-🟦 2. Train Gloss → Pose generation model
-
-Using:
-
-Mediapipe extracted pose sequences
-
-LSTM / Transformer
-
-🟦 3. Add 3D pose and avatar animation
-
-(Not included yet.)
-
-🟦 4. Add proper sign grammar rules
-🟦 5. Collect + preprocess datasets
-
-Team members can help with this step.
-
-4. Project Folder Structure (With Explanation of Missing ML Training)
+```
 SIGNMT/
 │ demo_run.py                → Main pipeline (runs text/speech/video input)
 │ output.mp4                 → Final generated video
@@ -121,59 +81,81 @@ SIGNMT/
 │   └── youtube_audio.py     → YouTube audio extraction
 │
 ├── models/                  → (Currently contains no trained ML models)
-│                            → (Text→gloss model NOT trained yet)
-│                            → (Gloss→pose neural model NOT trained yet)
 │
+├── sign-datasets/           → Placeholder for future datasets
+│
+└── signmt-env/              → Python environment
+```
 
-⚠ Note for team:
+**Note:** `models/` contains placeholders only. No training performed.
 
-models/ folder contains placeholders.
-No ML training has been done.
-All behavior is rule-based.
+---
 
-5. How the System Works (For New Team Members)
-✔ 1. Input selection
+## 5. Working Structure (System Flow Diagram)
 
-User chooses:
+```
+┌────────────────────┐
+│ 1. User Input       │
+│  • Text             │
+│  • Microphone audio │
+│  • YouTube audio    │
+└─────────┬──────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ 2. Language Detection     │
+│  (langdetect)             │
+└─────────┬────────────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ 3. Translation to English │
+│  (deep-translator)        │
+└─────────┬────────────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ 4. Text Cleaning          │
+│  (lowercase, punctuation) │
+└─────────┬────────────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ 5. Dummy Gloss Generator  │
+│  (word → UPPERCASE token) │
+└─────────┬────────────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ 6. Gloss → Pose Mapping   │
+│  (dictionary-based rules) │
+└─────────┬────────────────┘
+          │
+          ▼
+┌──────────────────────────┐
+│ 7. Pose Renderer          │
+│  (OpenCV → output.mp4)    │
+└──────────────────────────┘
+```
 
-Text
+## 5. How the system works (pipeline)
 
-Microphone speech
+1. Input selection: text / microphone / YouTube audio
+2. Language detection (`langdetect`) → translate to English (`deep-translator`)
+3. Text cleaning (lowercase, punctuation removal)
+4. Dummy gloss generation (words → UPPERCASE tokens)
+5. Gloss → Pose generation (lookup in dictionary)
+6. Video rendering (OpenCV draws simple pose dots/lines → `output.mp4`)
 
-YouTube audio
+---
 
-✔ 2. Language Detection
+## 6. Prerequisites & setup (team members)
 
-langdetect identifies the language.
+* **Python**: 3.10 (important)
 
-✔ 3. Translate to English
+Install required packages:
 
-We use GoogleTranslator.
-
-✔ 4. Text Cleaning
-
-Lowercasing + punctuation removal.
-
-✔ 5. Gloss Generation (Dummy)
-
-Words → UPPERCASE tokens
-(No trained gloss model is used.)
-
-✔ 6. Gloss → Pose Generation
-
-Using a static dictionary mapping
-(No ML model involved.)
-
-✔ 7. Video Rendering
-
-OpenCV draws white pose dots → saves as output.mp4.
-
-6. Prerequisites (Team Member Setup)
-✔ Python 3.10
-
-(Important!)
-
-✔ Required packages
+```bash
 pip install numpy==1.26.4
 pip install langdetect
 pip install deep-translator
@@ -184,68 +166,133 @@ pip install nltk
 pip install rich
 pip install certifi
 
-
-(Optional STT)
-
+# Optional STT
 pip install openai-whisper
+```
 
-System Requirements:
+System: Windows 10/11, 4GB RAM, no GPU required.
 
-Windows 10/11
+---
 
-4GB RAM
+## 7. Running the project
 
-No GPU needed
+1. Activate environment:
 
-7. Running the Project
-
-Step 1 — Activate environment:
-
+```powershell
 signmt-env\Scripts\Activate.ps1
+```
 
+2. Run main pipeline:
 
-Step 2 — Run main file:
-
+```bash
 python demo_run.py
+```
+
+3. Choose mode at prompt:
+
+* `1` → Text → Sign
+* `2` → Microphone → Sign
+* `3` → YouTube → Sign
+
+4. Output: `output.mp4` saved in project root.
+
+---
+
+## 8. Important notes for contributors
+
+* This project currently uses **NO** ML training — everything is rule-based and modular.
+* All ML-related folders are placeholders and will be filled in Phase 2.
+* The pipeline is modular: translation, glossing, pose rendering are separate files to make contributions straightforward.
+
+---
+
+## 9. Contribution & tasks (open items)
+
+* Collect and preprocess sign language datasets (RWTH, How2Sign, ASLG-PC12)
+* Implement and train Text→Gloss and Gloss→Pose models
+* Add 3D pose support and avatar rendering
+* Improve rendering quality and add more naturalized poses
+
+---
+
+## 10. Quick developer helpers (examples)
+
+### `demo_run.py` — minimal skeleton
+
+```python
+"""demo_run.py — minimal pipeline skeleton for SIGNMT
+This skeleton shows how components are wired. Implementations live in `utils/`.
+"""
+import argparse
+from utils.langid import detect_language
+from utils.text_clean import clean_text
+from utils.gloss_to_pose_dict import gloss_from_text, poses_from_gloss
+from utils.pose_render import render_video
 
 
-Step 3 — Choose mode:
+def run_text_mode(text: str, out_file: str = "output.mp4"):
+    lang = detect_language(text)
+    # translation step assumed handled earlier — placeholder
+    cleaned = clean_text(text)
+    gloss = gloss_from_text(cleaned)
+    poses = poses_from_gloss(gloss)
+    render_video(poses, out_file)
 
-1 → Text → Sign
-2 → Microphone → Sign
-3 → YouTube → Sign
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', choices=['text','mic','youtube'], default='text')
+    parser.add_argument('--text', type=str, default='HELLO WORLD')
+    args = parser.parse_args()
+
+    if args.mode == 'text':
+        run_text_mode(args.text)
+    else:
+        raise NotImplementedError('mic/youtube modes are in utils/stt.py and utils/youtube_audio.py')
+```
+
+### `utils/gloss_to_pose_dict.py` — example function
+
+```python
+# utils/gloss_to_pose_dict.py
+# minimal dictionary-based gloss -> poses mapper
+
+def gloss_from_text(text: str):
+    # dummy: split and uppercase tokens
+    return [w.upper() for w in text.split()]
 
 
-Step 4 — Output:
+def poses_from_gloss(gloss_tokens):
+    # each token -> simple synthetic pose sequence (list of frames)
+    poses = []
+    for token in gloss_tokens:
+        # synthetic pose: list of (x,y) landmarks for few frames
+        frames = [ [(i*5, i*3) for i in range(8)] for _ in range(5) ]
+        poses.append({'token': token, 'frames': frames})
+    return poses
+```
 
-output.mp4
+### `utils/pose_render.py` — minimal rendering idea
 
-8. What The Team Should Know (Important Notes)
-✔ This project currently uses NO AI training
+```python
+# utils/pose_render.py
+import cv2
+import numpy as np
 
-Just rule-based transformations.
 
-✔ All ML folders are placeholders
+def render_video(poses, out_file='output.mp4', frame_size=(320,240), fps=10):
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    writer = cv2.VideoWriter(out_file, fourcc, fps, frame_size)
 
-We will add real ML in Phase 2.
+    for token_block in poses:
+        for frame_landmarks in token_block['frames']:
+            img = np.zeros((frame_size[1], frame_size[0], 3), dtype=np.uint8)
+            img.fill(255)  # white background
+            for (x,y) in frame_landmarks:
+                cv2.circle(img, (int(x)%frame_size[0], int(y)%frame_size[1]), 4, (0,0,0), -1)
+            writer.write(img)
+    writer.release()
+```
 
-✔ Everyone should understand the pipeline
-
-so future improvements can be added easily.
-
-✔ The system is modular
-
-Each component (translation, glossing, pose rendering) is separate.
-
-9. Final Summary for Collaboration
-
-This document is the official guide for contributors.
-Everyone joining the project must know:
-
-✔ What the system currently does
-✔ What it does NOT do (NO TRAINED MODELS)
-✔ What the next goals are
-✔ How the code is structured
-✔ How to run it
-✔ What tasks are open for contributors
+---
 
