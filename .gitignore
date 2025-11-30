@@ -1,0 +1,13 @@
+signmt-env/
+env/
+venv/
+*.venv
+
+__pycache__/
+*.pyc
+
+.vscode/
+demo_frames/
+outputs/
+output.mp4
+
