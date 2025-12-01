@@ -1,4 +1,4 @@
-# SIGN.MT
+# SIGN FOR AC
 
 > **Multilingual, rule-based sign-language rendering system (no ML trained yet)**
 
@@ -6,7 +6,7 @@
 
 ## 1. Project summary
 
-**sign.mt** converts:
+**sign.ac** converts:
 
 * Text → Sign Video
 * Speech → Text → Sign Video
