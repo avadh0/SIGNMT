@@ -1,4 +1,4 @@
-# SIGN FOR AC
+# SIGN FOR Ac
 
 > **Multilingual, rule-based sign-language rendering system (no ML trained yet)**
 
